@@ -7,7 +7,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'https://cursorholtvotellitebackend.vercel.app',
+        target: 'http://localhost:4000',
         changeOrigin: true,
       },
     },

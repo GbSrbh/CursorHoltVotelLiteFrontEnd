@@ -1,7 +1,11 @@
-const API = '/api';
+// Use VITE_API_URL to send requests to a different domain (e.g. https://your-backend.com).
+// If unset, requests go to same origin + /api (relies on dev proxy or same-host backend).
+const API_BASE = import.meta.env.VITE_API_URL ?? '';
+const API_PATH = '/api';
+const API = API_BASE ? `${API_BASE.replace(/\/$/, '')}${API_PATH}` : API_PATH;
 
 async function request(path, options = {}) {
-  const url = path.startsWith('http') ? path : `${API}${path}`;
+  const url = path.startsWith('http') ? path : `${API}${path.startsWith('/') ? path : `/${path}`}`;
   const res = await fetch(url, {
     ...options,
     headers: {
