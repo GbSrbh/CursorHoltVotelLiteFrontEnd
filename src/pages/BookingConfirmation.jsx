@@ -12,7 +12,7 @@ export default function BookingConfirmation() {
   const [loading, setLoading] = useState(true);
   const [detailsError, setDetailsError] = useState(null);
 
-  // Booking code from book API response (support multiple response shapes)
+  // Booking code from book API response (support multiple response shapes from Volt/book API)
   const bookingCode =
     booking?.bookingCode ??
     booking?.bookingId ??
@@ -20,11 +20,20 @@ export default function BookingConfirmation() {
     booking?.confirmationNumber ??
     booking?.id ??
     booking?.result?.bookingCode ??
+    booking?.result?.bookingId ??
+    booking?.result?.reference ??
     booking?.data?.bookingCode ??
-    booking?.results?.bookingCode;
+    booking?.data?.bookingId ??
+    booking?.data?.reference ??
+    booking?.data?.id ??
+    booking?.results?.bookingCode ??
+    booking?.results?.bookingId ??
+    booking?.results?.[0]?.bookingCode ??
+    booking?.results?.[0]?.bookingId ??
+    booking?.results?.[0]?.reference;
 
   useEffect(() => {
-    if (!bookingCode) {
+    if (!booking || !bookingCode) {
       setLoading(false);
       return;
     }
@@ -35,7 +44,6 @@ export default function BookingConfirmation() {
       try {
         const res = await api.getBookingDetails(bookingCode);
         if (!cancelled) {
-          // Normalize: API may return { data: {...} } or { results: {...} } or flat object
           const normalized = res?.data ?? res?.results ?? res;
           setDetails(normalized && typeof normalized === 'object' ? normalized : res);
         }
@@ -46,7 +54,7 @@ export default function BookingConfirmation() {
       }
     })();
     return () => { cancelled = true; };
-  }, [bookingCode]);
+  }, [booking, bookingCode]);
 
   if (!booking) {
     return (
